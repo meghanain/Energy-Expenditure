@@ -1,0 +1,39 @@
+import pandas as pd
+import glob
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import plotly.graph_objs as go
+import plotly.express as px
+import dash_html_components as html
+
+STAND_START_COL=26
+SW_START_COL=28
+MW_START_COL=41
+JOG_START_COL=54
+SPRINT_START_COL=67
+SPRINT_TIME=68
+
+participant_data=pd.read_csv('participantData.csv', skiprows=[51, 52, 53, 54, 55])
+actigraph_data_list=[pd.read_csv(filename, skiprows=10) for filename in glob.glob("Actigraph Data/*.csv")]
+
+def main():
+    print(getIndiPATimes(0))
+    print(getIndiDemographics(0))
+    print(getActigraphPARange(0))
+    print(getActigraphData(0))
+    #plot_acceleration_scatter(0)
+    dashboard(0)
+    
+def getIndiPATimes(id):#Returns (stand, SW, MW, Jog, sprint, sprint time) for each participant
+    return (participant_data['Stand_TimeStart'].values[id]+":00", participant_data['SW_TimeStart'].values[id]+":00", participant_data['MW_TimeStart'].values[id]+":00", participant_data['Jog_TimeStart'].values[id]+":00", participant_data['Sprint_TimeStart'].values[id]+":00", participant_data['Sprint_Time_seconds'].values[id])
+def getIndiDemographics(id):#Returns (age, sex, race, height(cm), wieght(kg), BMI) for each participant
+    return (participant_data['Age'].values[id], participant_data['Sex'].values[id], participant_data['Race_Ethnicity'].values[id], participant_data['Height_cm'].values[id],participant_data['Weight_kg'].values[id], participant_data['BMI'].values[id])
+def getActigraphPARange(id):#Returns the rows the start of each physical activity STAND-->SW-->MW-->JOG-->SPRINT
+    return [actigraph_data_list[id][' Time'].values[:].tolist().index(t) for t in actigraph_data_list[id][' Time'].values[:] if t in getIndiPATimes(id)]
+def getActigraphData(id):
+    return (actigraph_data_list[id][' Axis1'].values[:],actigraph_data_list[id]['Axis2'].values[:], actigraph_data_list[id]['Axis3'].values[:])
+def plot_acceleration_scatter(id):
+    fig = px.scatter(x=actigraph_data_list[id][' Time'].values[:].tolist(),y=actigraph_data_list[id][' Axis1'].values[:].tolist())
+    fig.show()
+main()

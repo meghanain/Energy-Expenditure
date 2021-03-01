@@ -1,0 +1,15 @@
+
+import json, os
+import pandas as pd
+path_to_json='Json Files/LW100/'
+json_files = [pos_json for pos_json in os.listdir(path_to_json) if pos_json.endswith('.json')]
+obj=json_files[0].read()
+print(str(obj['pose_keypoints_2d']))
+#pose_json=pd.DataFrame().from_dict(json_files[0])
+#jsons_data = pd.DataFrame(columns=['x', 'y','c'])
+#for index, js in enumerate(json_files):
+#    with open(os.path.join(path_to_json, js)) as json_file:
+#        json_text=json.load(json_file)
+#        x=json_text['version']['people']['pose_keypoints_2d']
+
+#print(jsons_data)
